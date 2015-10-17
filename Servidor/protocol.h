@@ -9,12 +9,15 @@
 #define SD  "QUIT"  // Finalizacion de la conexion de aplicacion
 #define SD2 "EXIT"  // Finalizacion de la conexion de aplicacion y finaliza servidor
 
+#define SUM "SUM" //Para realizar la suma de los dos digitos
+
 // RESPUESTAS A COMANDOS DE APLICACION
 #define OK  "OK"
 #define ER  "ERROR"
 
 //FIN DE RESPUESTA
 #define CRLF "\r\n"
+#define SP  "%x20"
 
 //ESTADOS
 #define S_HELO 0
