@@ -31,7 +31,7 @@ main()
 	WSADATA wsaData;// Para trabajar con sockets en Windows
 	SOCKET sockfd,nuevosockfd; //definicion de sockets
 	struct sockaddr_in  local_addr,remote_addr; //Estructura basica para llamadas al sistema y funciones relacionada con direcciones de Internet
-	char buffer_out[1024],buffer_in[1024], cmd[10], usr[10], pas[10],num1[4],num2[4],copia[17]; //buffers y entrada de datos
+	char buffer_out[1024],buffer_in[1024], cmd[10], usr[10], pas[10],num1[5],num2[5],copia[25]; //buffers y entrada de datos
 	int err,tamanio,i; //numeros enteros para la definicion de errores y el tamaño
 	int fin=0, fin_conexion=0;
 	int recibidos=0,enviados=0; //inicializacion de las variables recibidos y enviados para el manejo de datos
@@ -121,7 +121,7 @@ main()
 		{
 					DWORD error=GetLastError();
 					
-					printf("SERVIDOR> Error %d en la recepcion de datos\r\n",error);
+					printf("SERVIDOR> Error %d en el envío de datos\r\n",error);
 		
 					estado=S_QUIT; // Salimos con "estado=S_QUIT"
 		}
@@ -161,10 +161,13 @@ main()
 							DWORD error=GetLastError();
 							printf("SERVIDOR> Error %d en la recepcion de datos\r\n",error);
 							fin_conexion=1;
+							estado=S_QUIT;
+							continue;
+
 							}
 							else
 							{
-							printf("SERVIDOR> Conexión cerrada\r\n");
+							printf("SERVIDOR> Conexión cerrada\r\n");  // Si recibimos un 0, la conexion ha sido liberada de forma acordada
 							fin_conexion=1;
 							}
 						}
@@ -230,10 +233,10 @@ main()
 						sprintf_s (buffer_out, sizeof(buffer_out), "%s Fin de la conexión%s", OK,CRLF);
 						fin_conexion=1;
 					}
-					/*else
+					else
 					{
 						sprintf_s (buffer_out, sizeof(buffer_out), "%s Comando incorrecto%s",ER,CRLF);
-					}*/
+					}
 				break;
 
 				case S_DATA: /***********************************************************/
@@ -257,7 +260,7 @@ main()
 					else if (strcmp(cmd,SUM)==0)
 					{
 						copia[14]=0x00;
-						strncpy_s(copia,sizeof(copia), buffer_in, 14);
+						strncpy_s(copia,sizeof(copia), buffer_in, 22);
 					 // Partes en la cadena.
 					    n_partes =3;
 					  // Primer strtok
@@ -272,14 +275,36 @@ main()
 						 numbr1=atoi(partes[1]);
 						 numbr2=atoi(partes[2]);
 
-						resultado=numbr1+numbr2;
-						if(numbr1<0 || numbr2<0 || numbr1>9999 || numbr2>9999 || numbr1>9999 && numbr2>9999)
+						 printf("N1: %d \n",numbr1);
+						 printf("N2: %d \n",numbr2);
+
+						
+						if(numbr1<0 && numbr2<0)
 						{
-							sprintf_s (buffer_out, sizeof(buffer_out), "%s Se han introducido numeros negativos o mayores de 4 cifras %s",ER,CRLF);
-							fin_conexion=1;
+							sprintf_s (buffer_out, sizeof(buffer_out), "%s Se han introducido numeros negativos %s",ER,CRLF);
+							//estado=S_DATA;
+						}
+						else if(numbr1<0 || numbr2<0)
+						{
+							sprintf_s (buffer_out, sizeof(buffer_out), "%s Se han introducido numeros negativos %s",ER,CRLF);
+						
+							//estado=S_DATA;
+						}
+
+						else if(numbr1>9999 || numbr2>9999)
+						{
+						 sprintf_s (buffer_out, sizeof(buffer_out), "%s Se han introducido numeros mayores de 4 cifras %s",ER,CRLF);
+					
+						// estado=S_DATA;
+						}
+						else if(numbr1>9999 && numbr2>9999)
+						{
+						 sprintf_s (buffer_out, sizeof(buffer_out), "%s Se han introducido numeros mayores de 4 cifras %s",ER,CRLF);
+					
+						// estado=S_DATA;
 						}
 						else{
-					
+						resultado=numbr1+numbr2;
 						sprintf_s (buffer_out, sizeof(buffer_out), "%s %d %s",OK,resultado,CRLF);
 						}
 					}
@@ -303,7 +328,9 @@ main()
 							{
 							DWORD error=GetLastError();
 							printf("SERVIDOR> Error %d en el envío de datos\r\n",error);
+							fin_conexion=1;
 							estado=S_QUIT;
+
 							}
 							else
 							{

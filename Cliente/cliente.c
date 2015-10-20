@@ -93,7 +93,7 @@ int main(int *argc, char *argv[])
 				do{
 					/*Comprobacion de autenticacion*/
 						if(estado==S_PASS &&strncmp(buffer_in,OK,2)!=0)
-						{ /*Comprobacion autenticacion*/
+						{ 
 								estado=S_USER; //si el estado PASS no nos ha devuelto un OK (usuario y password OK), volvemos al estado USER
 						}
 		
@@ -162,11 +162,13 @@ int main(int *argc, char *argv[])
 					//Envio
 					if(estado!=S_HELO){
 					// Ejercicio: Comprobar el estado de envio
+
 						// sockfd: socket que utilizamos
 						// buffer_out: buffer que usamos 
 						//(int)strlen(buffer_out): tamaño del buffer con los datos que vamos a enviar (en bytes)
 						// 0: flag, funcionamiento normal del protocolo.
-						enviados=send(sockfd,buffer_out,(int)strlen(buffer_out),0);	
+						enviados=send(sockfd,buffer_out,(int)strlen(buffer_out),0);
+
 						if(enviados==SOCKET_ERROR || enviados==0)
 						{
 							if(enviados==SOCKET_ERROR)
@@ -222,9 +224,11 @@ int main(int *argc, char *argv[])
 			closesocket(sockfd);
 			
 		}	
+		do{
 		printf("-----------------------\r\n\r\nCLIENTE> Volver a conectar (S/N)\r\n"); // Opcion para volver a realizar una conexion
 		option=_getche();
-
+		}while((option!='s' && option!='S') && (option!='n' && option!='N'));
+		
 	}while(option!='n' && option!='N');
 	// Fin del primer "do", sale de el cuando se introduce por teclado una "n" o una "N"
 	
@@ -232,3 +236,4 @@ int main(int *argc, char *argv[])
 	return(0);
 
 }
+
